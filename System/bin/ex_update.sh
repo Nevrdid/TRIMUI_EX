@@ -27,28 +27,30 @@ done
 
 cd "$RESTORE_DIR"
 
-if [ -f "/mnt/SDCARD/trimui.portmaster.zip" ]; then
+if [ -d "/mnt/SDCARD/Apps/PortMaster" ]; then
     sdl2imgshow \
         -i "$EX_RESOURCE_PATH/background.png" \
         -f "$EX_RESOURCE_PATH/DejaVuSans.ttf" \
         -s 48 \
         -c "0,0,0" \
         -t "Installing PortMaster" &
+    latest_url=$(curl -s https://api.github.com/repos/PortsMaster/PortMaster-GUI/releases/latest | grep '/PortMaster.zip"' | cut -d '"' -f 4)
+
+    wget "$latest_url" -o /tmp/PortMaster.zip
 
     echo "Updating PortMaster" >> "$UPDATES_DIR/update.log"
-    unzip -o -d "/mnt/SDCARD/" "/mnt/SDCARD/trimui.portmaster.zip" >> "$UPDATES_DIR/update.log"
-    rm -f "/mnt/SDCARD/trimui.portmaster.zip" >> "$UPDATES_DIR/update.log"
+    unzip -o -d "/mnt/SDCARD/" "/tmp/PortMaster.zip" >> "$UPDATES_DIR/update.log"
 
     mkdir -p /roms/ports/PortMaster/
-    cp /mnt/SDCARD/Apps/PortMaster/PortMaster/control.txt /roms/ports/PortMaster/control.txt
+    cp /mnt/SDCARD/Apps/PortMaster/PortMaster/trimui/control.txt /roms/ports/PortMaster/control.txt
 
     pkill -f sdl2imgshow
 fi
 
-if [ ! -f /roms/ports/PortMaster/control.txt ] && [ -f /mnt/SDCARD/Apps/PortMaster/PortMaster/control.txt ]; then
+if [ ! -f /roms/ports/PortMaster/control.txt ] && [ -f /mnt/SDCARD/Apps/PortMaster/PortMaster/trimui/control.txt ]; then
     # Fix PortMaster
     mkdir -p /roms/ports/PortMaster/
-    cp /mnt/SDCARD/Apps/PortMaster/PortMaster/control.txt /roms/ports/PortMaster/control.txt
+    cp /mnt/SDCARD/Apps/PortMaster/PortMaster/trimui/control.txt /roms/ports/PortMaster/control.txt
 fi
 
 if [ -f /mnt/SDCARD/Apps/launch.sh ]; then
